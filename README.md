@@ -1,5 +1,7 @@
 # Nginx-beginner
+
 Introduction
+
 Nginx is one of the most popular web servers in the world and is responsible for hosting some of the largest and highest-traffic sites on the internet. It is a lightweight choice that can be used as either a web server or reverse proxy.
 
 In this guide, we’ll discuss how to install Nginx on your Ubuntu 20.04 server, adjust the firewall, manage the Nginx process, and set up server blocks for hosting more than one domain from a single server.
@@ -125,6 +127,7 @@ sudo mkdir -p /var/www/your_domain/html
 Next, assign ownership of the directory with the $USER environment variable:
 
 sudo chown -R $USER:$USER /var/www/your_domain/html
+
 The permissions of your web roots should be correct if you haven’t modified your umask value, which sets default file permissions. To ensure that your permissions are correct and allow the owner to read, write, and execute the files while granting only read and execute permissions to groups and others, you can input the following command:
 
 sudo chmod -R 755 /var/www/your_domain
@@ -206,7 +209,9 @@ Now that you know how to manage the Nginx service itself, you should take a few 
 
 Content
 /var/www/html: The actual web content, which by default only consists of the default Nginx page you saw earlier, is served out of the /var/www/html directory. This can be changed by altering Nginx configuration files.
+
 Server Configuration
+
 /etc/nginx: The Nginx configuration directory. All of the Nginx configuration files reside here.
 /etc/nginx/nginx.conf: The main Nginx configuration file. This can be modified to make changes to the Nginx global configuration.
 /etc/nginx/sites-available/: The directory where per-site server blocks can be stored. Nginx will not use the configuration files found in this directory unless they are linked to the sites-enabled directory. Typically, all server block configuration is done in this directory, and then enabled by linking to the other directory.
