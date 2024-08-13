@@ -33,16 +33,21 @@ sudo ufw app list
 You should get a listing of the application profiles:
 
 Output
+
 Available applications:
   Nginx Full
   Nginx HTTP
   Nginx HTTPS
   OpenSSH
+  
 As demonstrated by the output, there are three profiles available for Nginx:
 
 Nginx Full: This profile opens both port 80 (normal, unencrypted web traffic) and port 443 (TLS/SSL encrypted traffic)
+
 Nginx HTTP: This profile opens only port 80 (normal, unencrypted web traffic)
+
 Nginx HTTPS: This profile opens only port 443 (TLS/SSL encrypted traffic)
+
 It is recommended that you enable the most restrictive profile that will still allow the traffic you’ve configured. Right now, we will only need to allow traffic on port 80.
 
 You can enable this by typing:
@@ -84,9 +89,11 @@ As confirmed by this out, the service has started successfully. However, the bes
 You can access the default Nginx landing page to confirm that the software is running properly by navigating to your server’s IP address. If you do not know your server’s IP address, you can find it by using the icanhazip.com tool, which will give you your public IP address as received from another location on the internet:
 
 curl -4 icanhazip.com
+
 When you have your server’s IP address, enter it into your browser’s address bar:
 
 http://your_server_ip
+
 You should receive the default Nginx landing page:
 
 Nginx default page
@@ -99,21 +106,27 @@ Now that you have your web server up and running, let’s review some basic mana
 To stop your web server, type:
 
 sudo systemctl stop nginx
+
 To start the web server when it is stopped, type:
 
 sudo systemctl start nginx
+
 To stop and then start the service again, type:
 
 sudo systemctl restart nginx
+
 If you are only making configuration changes, Nginx can often reload without dropping connections. To do this, type:
 
 sudo systemctl reload nginx
+
 By default, Nginx is configured to start automatically when the server boots. If this is not what you want, you can disable this behavior by typing:
 
 sudo systemctl disable nginx
+
 To re-enable the service to start up at boot, you can type:
 
 sudo systemctl enable nginx
+
 You have now learned basic management commands and should be ready to configure the site to host more than one domain.
 
 Step 5 – Setting Up Server Blocks (Recommended)
@@ -124,6 +137,7 @@ Nginx on Ubuntu 20.04 has one server block enabled by default that is configured
 Create the directory for your_domain as follows, using the -p flag to create any necessary parent directories:
 
 sudo mkdir -p /var/www/your_domain/html
+
 Next, assign ownership of the directory with the $USER environment variable:
 
 sudo chown -R $USER:$USER /var/www/your_domain/html
@@ -134,6 +148,7 @@ sudo chmod -R 755 /var/www/your_domain
 Next, create a sample index.html page using nano or your favorite editor:
 
 sudo nano /var/www/your_domain/html/index.html
+
 Inside, add the following sample HTML:
 
 /var/www/your_domain/html/index.html
@@ -145,11 +160,13 @@ Inside, add the following sample HTML:
         <h1>Success!  The your_domain server block is working!</h1>
     </body>
 </html>
+
 Save and close the file by pressing Ctrl+X to exit, then when prompted to save, Y and then Enter.
 
 In order for Nginx to serve this content, it’s necessary to create a server block with the correct directives. Instead of modifying the default configuration file directly, let’s make a new one at /etc/nginx/sites-available/your_domain:
 
 sudo nano /etc/nginx/sites-available/your_domain
+
 Paste in the following configuration block, which is similar to the default, but updated for our new directory and domain name:
 
 /etc/nginx/sites-available/your_domain
@@ -171,15 +188,19 @@ Notice that we’ve updated the root configuration to our new directory, and the
 Next, let’s enable the file by creating a link from it to the sites-enabled directory, which Nginx reads from during startup:
 
 sudo ln -s /etc/nginx/sites-available/your_domain /etc/nginx/sites-enabled/
+
 Note: Nginx uses a common practice called symbolic links, or symlinks, to track which of your server blocks are enabled. Creating a symlink is like creating a shortcut on disk, so that you could later delete the shortcut from the sites-enabled directory while keeping the server block in sites-available if you wanted to enable it.
 
 Two server blocks are now enabled and configured to respond to requests based on their listen and server_name directives (you can read more about how Nginx processes these directives here):
 
 your_domain: Will respond to requests for your_domain and www.your_domain.
+
 default: Will respond to any requests on port 80 that do not match the other two blocks.
+
 To avoid a possible hash bucket memory problem that can arise from adding additional server names, it is necessary to adjust a single value in the /etc/nginx/nginx.conf file. Open the file:
 
 sudo nano /etc/nginx/nginx.conf
+
 Find the server_names_hash_bucket_size directive and remove the # symbol to uncomment the line. If you are using nano, you can quickly search for words in the file by pressing CTRL and w.
 
 Note: Commenting out lines of code – usually by putting # at the start of a line – is another way of disabling them without needing to actually delete them. Many configuration files ship with multiple options commented out so that they can be enabled or disabled, by toggling them between active code and documentation.
@@ -213,11 +234,17 @@ Content
 Server Configuration
 
 /etc/nginx: The Nginx configuration directory. All of the Nginx configuration files reside here.
+
 /etc/nginx/nginx.conf: The main Nginx configuration file. This can be modified to make changes to the Nginx global configuration.
+
 /etc/nginx/sites-available/: The directory where per-site server blocks can be stored. Nginx will not use the configuration files found in this directory unless they are linked to the sites-enabled directory. Typically, all server block configuration is done in this directory, and then enabled by linking to the other directory.
+
 /etc/nginx/sites-enabled/: The directory where enabled per-site server blocks are stored. Typically, these are created by linking to configuration files found in the sites-available directory.
+
 /etc/nginx/snippets: This directory contains configuration fragments that can be included elsewhere in the Nginx configuration. Potentially repeatable configuration segments are good candidates for refactoring into snippets.
+
 Server Logs
+
 /var/log/nginx/access.log: Every request to your web server is recorded in this log file unless Nginx is configured to do otherwise.
+
 /var/log/nginx/error.log: Any Nginx errors will be recorded in this log.
-Conclusion
